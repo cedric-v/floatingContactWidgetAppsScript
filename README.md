@@ -8,7 +8,7 @@ A floating contact form that can be easily integrated into any webpage. The form
 - Compliance with GDPR and Swiss nFADP for data protection
 - Perfect for sales pages and checkout forms to provide instant support
 - reCAPTCHA v2 validation
-- Data sent to Google Sheet
+- Data sent to Google Sheet using Google Apps Script
 - Email notification with reply-to configured
 - Source page URL recording
 - Responsive and modern design
