@@ -1,0 +1,187 @@
+<!-- 👉 Bouton flottant "Aide ?" -->
+<style>
+  #helpBtn {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background-color: #76789b;
+    color: white;
+    border: none;
+    border-radius: 50px;
+    padding: 12px 20px;
+    font-size: 16px;
+    cursor: pointer;
+    z-index: 9999;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+  }
+
+  #supportFormContainer {
+    display: none;
+    position: fixed;
+    bottom: 80px;
+    right: 20px;
+    width: 320px;
+    background: white;
+    border: 2px solid #76789b;
+    border-radius: 12px;
+    padding: 20px;
+    z-index: 9999;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+  }
+
+  .form-group {
+    margin-bottom: 15px;
+  }
+
+  #supportForm input,
+  #supportForm textarea {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    box-sizing: border-box;
+    font-size: 16px;
+    font-family: inherit;
+  }
+
+  #supportForm textarea {
+    height: 150px;
+    resize: vertical;
+  }
+
+  #supportForm button {
+    background-color: #76789b;
+    color: white;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: bold;
+    width: 100%;
+  }
+
+  #supportForm button:hover {
+    background-color: #65678a;
+  }
+
+  .message {
+    padding: 15px;
+    border-radius: 6px;
+    margin-bottom: 15px;
+    word-wrap: break-word;
+    white-space: normal;
+    line-height: 1.4;
+    font-size: 14px;
+  }
+
+  .success {
+    background-color: #d4edda;
+    color: #155724;
+    border: 1px solid #c3e6cb;
+  }
+
+  .error {
+    background-color: #f8d7da;
+    color: #721c24;
+    border: 1px solid #f5c6cb;
+  }
+
+  #supportFormContainer h3 {
+    font-size: 18px;
+    font-weight: normal;
+    margin-bottom: 15px;
+    color: #333;
+  }
+</style>
+
+<!-- 👉 Formulaire de contact -->
+<div id="supportFormContainer">
+  <!-- Titre du formulaire -->
+  <h3>Veuillez remplir ce formulaire et poser votre question.</h3>
+
+  <div id="formSuccessMsg" class="message success" style="display: none;"></div>
+  <div id="formErrorMsg" class="message error" style="display: none;"></div>
+
+  <!-- CONFIGURE HERE YOUR GOOGLE APPS SCRIPT URL -->
+  <form id="supportForm" action="https://script.google.com/macros/s/XYZ/exec" method="POST">
+    <input type="hidden" name="pageUrl" id="pageUrl">
+    <div class="form-group">
+      <input type="text" name="name" placeholder="Prénom" required>
+    </div>
+    <div class="form-group">
+      <input type="email" name="email" placeholder="Email" required>
+    </div>
+    <div class="form-group">
+      <input type="text" name="subject" placeholder="Sujet" required>
+    </div>
+    <div class="form-group">
+      <textarea name="message" rows="6" placeholder="Message" required></textarea>
+    </div>
+
+    <!-- reCAPTCHA v2 -->
+    <div class="g-recaptcha" data-sitekey="6LefnC4rAAAAAFuuMOa85JGMIhqFuaarJ98HYlay"></div>
+
+    <button type="submit">Envoyer</button>
+  </form>
+</div>
+
+<!-- 👉 Bouton flottant -->
+<button id="helpBtn">Aide ?</button>
+
+<!-- 👉 Scripts -->
+<script src="https://www.google.com/recaptcha/api.js" async defer></script>
+<script>
+  const form = document.getElementById('supportForm');
+  const formContainer = document.getElementById('supportFormContainer');
+  const successBox = document.getElementById('formSuccessMsg');
+  const errorBox = document.getElementById('formErrorMsg');
+
+  // Ajouter l'URL de la page au chargement
+  document.getElementById('pageUrl').value = window.location.href;
+
+  document.getElementById('helpBtn').addEventListener('click', () => {
+    formContainer.style.display = (formContainer.style.display === 'block') ? 'none' : 'block';
+    successBox.style.display = 'none';
+    errorBox.style.display = 'none';
+  });
+
+  form.addEventListener('submit', async e => {
+    e.preventDefault();
+
+    // Réinitialiser les messages
+    successBox.style.display = 'none';
+    errorBox.style.display = 'none';
+
+    try {
+      const formData = new FormData(form);
+      const response = await fetch(form.action, {
+        method: 'POST',
+        mode: 'no-cors',
+        body: formData,
+        headers: {
+          'Accept': 'application/json'
+        }
+      });
+
+      // Comme nous utilisons no-cors, nous ne pouvons pas lire la réponse directement
+      // Nous supposons que l'envoi a réussi si nous n'avons pas d'erreur
+      successBox.textContent = "✅ Merci ! Votre message a été envoyé.";
+      successBox.style.display = "block";
+      form.reset();
+      grecaptcha.reset();
+    } catch (error) {
+      errorBox.textContent = "❌ Une erreur est survenue lors de l'envoi.";
+      errorBox.style.display = "block";
+      console.error("Erreur :", error);
+    }
+  });
+</script>
+
+<script>
+  function createCorsResponse(message) {
+    const jsonResponse = JSON.stringify({ message: message });
+    return ContentService.createTextOutput(jsonResponse)
+      .setMimeType(ContentService.MimeType.JSON);
+  }
+</script>
