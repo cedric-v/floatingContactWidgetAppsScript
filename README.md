@@ -25,12 +25,13 @@ A floating contact form that can be easily integrated into any webpage. The form
 
 - `widget.html` : The HTML/CSS/JS form to integrate into your pages
 - `GoogleAppsScript.js` : The Google Apps Script to deploy, linked to the Google Sheet
+- `GoogleSpreadSheetTemplate.csv` : The columns to create in your Google Sheet doc linked to the script
 - `README.md` : Project documentation
 
 ## Installation
 
 1. **Google Apps Script**
-   - Create a Google Sheet and add the columns mentioned in the CSV template
+   - Create a Google Sheet and add the columns mentioned in the `GoogleSpreadSheetTemplate.csv` template
    - Inside the Google Sheet document, go to Extensions / Apps Script
    - Copy-paste the content of `GoogleAppsScript.js` and adjust the destination email
    - In the script editor, go to "Project Settings" > "Script Properties"
